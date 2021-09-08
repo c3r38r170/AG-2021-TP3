@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Individuo implements Comparable<Individuo>{
-	private static final double PROBABILIDAD_DE_MUTACIÓN=0.05;
+public class Individuo implements Comparable<Individuo>,Cloneable {
+	private static final double PROBABILIDAD_DE_MUTACIÓN=.05;
 	
 	ArrayList<Integer> cromosoma=new ArrayList<>();
 	int longitudDelCromosoma;
@@ -82,9 +82,8 @@ public class Individuo implements Comparable<Individuo>{
 			clon = (Individuo)this.clone();
 			clon.valorFuncionObjetivo=valorFuncionObjetivo;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}// Individuo(Arrays.copyOf(cromosoma,cromosoma.length));
+		}// I.ndividuo(Arrays.copyOf(cromosoma,cromosoma.length));
 		return clon;
 	}
 
@@ -100,17 +99,16 @@ public class Individuo implements Comparable<Individuo>{
 	public String toString(){
 		StringBuilder sb = new StringBuilder("Recorrido:");
 		for(int valorGen : cromosoma){
-			sb.append("\n\t"+App.provincias[valorGen]);
+			sb.append("\n\t"+App.PROVINCIAS[valorGen]);
 		}
 		return sb.toString();
 	}
 	
+	// Este método se usa para ordenar de mejor a peor.
 	@Override
 	public int compareTo(Individuo otro) {
-		for (int i=0,to=otro.longitudDelCromosoma;i<to;i++)
-			if(otro.cromosoma.get(i)!=this.cromosoma.get(i))
-				return otro.cromosoma.get(i)-this.cromosoma.get(i);
-		return 0;
+		double resta=this.valorFuncionObjetivo-otro.valorFuncionObjetivo;
+		return (int)(resta/Math.abs(resta));
 	}
 
 	@Override
