@@ -1,6 +1,10 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -35,44 +39,102 @@ public class App extends JFrame {
 	
 	private WebEngine webEngine;
 
-	public static String[] provincias={
-		"Buenos Aires - La Plata"
-		,"Catamarca - San Fernando del Valle de Catamarca"
-		,"Chaco - Resistencia"
-		,"Chubut - Rawson"
+	public static final String[] PROVINCIAS={
+		"Buenos Aires - Cdad. de Bs. As."
 		,"Córdoba - Córdoba"
 		,"Corrientes - Corrientes"
-		,"Entre Ríos - Paraná"
 		,"Formosa - Formosa"
-		,"Jujuy - San Salvador de Jujuy"
-		,"La Pampa - Santa Rosa"
+		,"Buenos Aires - La Plata"
 		,"La Rioja - La Rioja"
 		,"Mendoza - Mendoza"
-		,"Misiones - Posadas"
 		,"Neuquén - Neuquén"
-		,"Río Negro - Viedma"
+		,"Entre Ríos - Paraná"
+		,"Misiones - Posadas"
+		,"Chubut - Rawson"
+		,"Chaco - Resistencia"
+		,"Santa Cruz - Río Gallegos"
+		,"Catamarca - San Fernando del Valle de Catamarca"
+		,"Tucumán - San Miguel de Tucumán"
+		,"Jujuy - San Salvador de Jujuy"
 		,"Salta - Salta"
 		,"San Juan - San Juan"
 		,"San Luis - San Luis"
-		,"Santa Cruz - Río Gallegos"
 		,"Santa Fe - Santa Fe"
+		,"La Pampa - Santa Rosa"
 		,"Santiago del Estero - Santiago del Estero"
 		,"Tierra del Fuego, Antártida e Islas del Atlántico Sur - Ushuaia"
-		,"Tucumán - San Miguel de Tucumán"};
-	public static double[][] distancias ={
-		{0,1128,935.8,1370.7,696.4,916.7,500,1102.2,1491.8,612.9,1131.6,1049.7,1001,1139.4,914.3,1466.2,1113.9,792,2506.6,468.5,1047.2,3078.3,1247.6}
-		,{1128,0,854.8,1901.9,444.1,869.5,814,996.4,564.3,santa.rosa}
-		,{0,0,0,0}
-		,{0,0,0,0}
-		,{0,0,0,0}
+		,"Río Negro - Viedma"
 	};
+	/* public static int[][] DISTANCIAS ={
+		
+		{0,646,792,933,53,986,985,989,375,834,1127,794,2082,979,1080,1334,1282,1005,749,393,579,939,2373,799}
+		,{646,0,677,824,698,340,466,907,348,919,1321,669,2281,362,517,809,745,412,293,330,577,401,2618,1047}
+		,{993.3,855.7,0.0,2168.3,867.6,20.2,556.7,175.9,850.0,1329.5,1.008,1432.6,339.9,1.856,1728.9,824.5,1350.6,1177.7,3304.1,546.0,622.8,3875.8,785.1}
+		,{1361,1898.2,2168.3,0.0,1451.5,2262.7,1662.1,2334.8,2357.5,840.8,1820.9,1572.0,2346.4,744.0,506.2,2332.0,1666.9,1344.9,1161.8,1630.5,1895.0,1733.5,2017.9}
+		,{753.4,439.8,868.4,1450.2,0.0,888.3,401.6,1034.8,899.1,610.4,449.4,655.2,1152.5,1138.0,1199.0,873.6,577.9,401.6,2586.1,370.0,436.6,3157.8,}
+	}; */
+	public static final Integer[][] DISTANCIAS_RAW ={
+			/*23	22	21... */
+		/*1*/{799,2373,939,579,393,749,1005,1282,1334,1080,979,2082,794,1127,834,375,989,985,986,53,933,792,646}
+		/*2*/,{1047,2618,401,577,330,293,412,745,809,517,362,2281,669,1321,919,348,907,466,340,698,824,677}
+		/*3*/,{1527,3131,535,1136,498,969,1039,719,742,633,691,2819,13,1845,291,500,1534,1131,814,830,157}
+		,{1681,3284,629,1293,654,1117,1169,741,750,703,793,2974,161,1999,263,656,1690,1269,927,968}
+		,{789,2350,991,602,444,795,1053,1333,1385,1132,1030,2064,833,1116,857,427,1005,1029,1038}
+		,{1311,2821,311,834,640,435,283,533,600,330,149,2473,802,1548,1098,659,1063,427}
+		,{1019,2435,713,586,775,235,152,957,1023,756,569,2081,1121,1201,1384,790,676}
+		,{479,1762,1286,422,1049,643,824,1591,1658,1370,1182,1410,1529,543,1709,1053}
+		,{1030,2635,566,642,19,574,757,906,959,707,622,2320,498,1345,658}
+		,{1624,3207,827,1293,664,1200,1306,992,1007,924,980,2914,305,1951}
+		,{327,1300,1721,745,1349,1113,1340,2054,2120,1827,1647,975,1843}
+		,{1526,3130,523,1132,495,961,1029,706,729,620,678,2818}
+		,{1294,359,2677,1712,2325,2046,2231,2997,3063,2773,2587}
+		,{1391,2931,166,915,602,540,430,410,477,189}
+		,{1562,3116,141,1088,689,727,612,228,293}
+		,{1855,3408,414,1382,942,1017,874,67}
+		,{1790,3341,353,1316,889,950,808}
+		,{1141,2585,583,686,740,284}
+		,{882,2392,643,412,560}
+		,{1035,2641,547,641}
+		,{477,2044,977}
+		,{1446,3016}
+		,{1605}
+	};
+	public static HashMap<Set<Integer>,Integer> distancias = new HashMap<>();
+
+	public int obtenerDistanciaEntre(int a,int b){
+		/* if(a==b)
+			return 0; */
+		HashSet<Integer> set = new HashSet<>();
+		set.add(a);
+		set.add(b);
+		return distancias.get(set);
+	}
 
   // Función que sirve para evaluar el desempeño de cada individuo.
 	private double objetivo(Individuo individuo){
-		return .0;
+		int recorrido=0;
+		int ultimoDestino=individuo.cromosoma.get(individuo.cromosoma.size()-1);
+		for(int provincia: individuo.cromosoma){
+			recorrido+=obtenerDistanciaEntre(ultimoDestino,provincia);
+			ultimoDestino=provincia;
+		}
+		// El inverso de la cantidad de kilómetros.
+		// Los recorridos tienen probabilidades relativas proporcionales.
+		// (Si un recorrido es el doble de largo que el otro, tiene la mitad del fitness.)
+		return 1000/recorrido;
 	}
 	
 	public static void main(String[] args) throws Exception {
+		int n=PROVINCIAS.length-1;
+		for(int i=0;i<n;i++){
+			for(int j=0,to=n-i;j<to;j++){
+				Set<Integer> s = new HashSet<>();
+				s.add(i);
+				s.add(n-j);
+				distancias.put(s,DISTANCIAS_RAW[i][j]);
+			}
+		}
+
 		// launch(args);
 		new App();
 	}
@@ -80,6 +142,13 @@ public class App extends JFrame {
 	// @Override
 	// public void start(Stage primaryStage) throws Exception {
 	public App(){
+
+		System.out.println(obtenerDistanciaEntre(0,1));
+		System.out.println(obtenerDistanciaEntre(21,22));
+		System.out.println(obtenerDistanciaEntre(23,22));
+
+		System.exit(0);
+
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JFXPanel jfxPanel = new JFXPanel();
@@ -118,13 +187,13 @@ public class App extends JFrame {
 		// Generación de la primera población aleatoria.
 		poblacionActual=new Individuo[tamañoPoblacion];
 		for(int i=0;i<tamañoPoblacion;i++){
-			int[] cromosoma=new int[30];
+			int[] cromosoma=new int[App.PROVINCIAS.length];
 			
-			for(int j=0;j<30;j++)
+			for(int j=0;j<App.PROVINCIAS.length;j++)
 				cromosoma[j]=j;
 
-				// TODO Collections.shuffle or Arrays.sort with Math.random()
-			
+			Collections.shuffle(Arrays.asList(cromosoma));
+				
 			Individuo newIndividuo=new Individuo(cromosoma);
 			
 			poblacionActual[i]=newIndividuo;
@@ -147,34 +216,26 @@ public class App extends JFrame {
 		
 		sumatoriaPuntuaciones=0;
 
-		Individuo[] nuevaPoblacion=seleccionPorRango?
-			nuevaGeneracionPorRango()
-			:nuevaGeneracionPorRuleta();
+		//Individuo[] nuevaPoblacion=nuevaGeneracionPorRuleta();
 		
-		// Por ahora no, dijo el profe.
-		// if(convergencia)
-			// break
-		// else
-			//actualizar poblacionActual
-
-		ordenarPoblacion(nuevaPoblacion);
-		poblacionActual=nuevaPoblacion;
-		
-		calcularMinMaxPro();
-	}
-
-	private Individuo[] nuevaGeneracionPorRuleta(){
 		int cantidadPares=tamañoPoblacion/2;
 		Individuo[] nuevaPoblacion=new Individuo[tamañoPoblacion];
 
 		if(elitismo){
-			// Reemplazamos el último par por los mejores individuos. (Recuerde que las poblaciones están ordenadas.)
-			cantidadPares--;
-			nuevaPoblacion[tamañoPoblacion-1]=poblacionActual[0].crearClon();
-			nuevaPoblacion[tamañoPoblacion-2]=poblacionActual[1].crearClon();
-			sumatoriaPuntuaciones=poblacionActual[0].valorFuncionObjetivo+poblacionActual[1].valorFuncionObjetivo;
-		}
+			// // Reemplazamos el último par por los mejores individuos. (Recuerde que las poblaciones están ordenadas.)
+			// Guardamos el 20% de la población total, de ser impar se le resta en 1. Y se pasa a la siguiente generacion
+			int tamañoReducido=(int)Math.floor(tamañoPoblacion*.2);
+
+			if (tamañoReducido%2 == 1)
+				tamañoReducido--;
 			
+			for (int i = 0; i < tamañoReducido; i++){
+				cantidadPares -= tamañoReducido%2;
+				nuevaPoblacion[tamañoPoblacion-i-1]=poblacionActual[i].crearClon();
+				sumatoriaPuntuaciones+=poblacionActual[i].valorFuncionObjetivo;
+			}
+		}
+
 		for(int j=0;j<cantidadPares;j++){
 			
 			// Aplicación de selección.
@@ -207,49 +268,10 @@ public class App extends JFrame {
 			sumatoriaPuntuaciones+=valorObjetivo1+valorObjetivo2;
 		}
 
-		return nuevaPoblacion;
-	}
-	
-	private Individuo[] nuevaGeneracionPorRango(){
-		Individuo[] nuevaPoblacion=new Individuo[tamañoPoblacion];
-
-		// Elegimos un M de individuos aleatorio, mayor o igual a 1, menor o igual a la mitad de individuos.
-		// Y pasamos todos los individuos menos los M que reemplazaremos por descendencia de los mejores M.
-		int m=Utils.randomIntBetween(1, tamañoPoblacion/2);
-		for(int i=0,til=tamañoPoblacion-m*2;i<til;i++){
-			Individuo delMedio=poblacionActual[i+m].crearClon();
-			// TODO aplicar 
-			nuevaPoblacion[tamañoPoblacion-i-1]=delMedio;
-			sumatoriaPuntuaciones+=delMedio.valorFuncionObjetivo;
-		}
-			
-		for(int j=0;j<m;j++){
-			
-			// Aplicación de selección.
-			int j1=j*2,j2=j1+1;
-			Individuo individuo1=poblacionActual[elegirIndicePorRuleta(vectorFitness,j)].crearClon()
-				,individuo2=poblacionActual[j].crearClon();
-			nuevaPoblacion[j2]=individuo2;
-	
-			// Aplicación de crossover. (Se encarga la clase Individuo)
-			if(Math.random()<.25)
-				nuevaPoblacion[j1]=individuo1;
-			else{ 
-        // Elegimos un hijo arbitrariamente.
-				// TODO preguntar con qué hijo me quedo
-				nuevaPoblacion[j1]=individuo1.crossover(individuo2)[(int)Math.round(Math.random())];
-				nuevaPoblacion[j1].valorFuncionObjetivo=objetivo(nuevaPoblacion[j1]);
-			}
-			
-			// Aplicación de mutación.
-			if(nuevaPoblacion[j1].aplicarMutacion())
-				nuevaPoblacion[j1].valorFuncionObjetivo=objetivo(nuevaPoblacion[j1]);
-			
-			// Sumatoria de todos los resultados de la función objetivo de la generación (sirve para el promedio y la próxima selección).
-			sumatoriaPuntuaciones+=nuevaPoblacion[j1].valorFuncionObjetivo+individuo2.valorFuncionObjetivo;
-		}
-
-		return nuevaPoblacion;
+		ordenarPoblacion(nuevaPoblacion);
+		poblacionActual=nuevaPoblacion;
+		
+		calcularMinMaxPro();
 	}
 
 	private int elegirIndicePorRuleta(double[] vectorFitness, int evitar) {
@@ -302,25 +324,27 @@ public class App extends JFrame {
 	// API para el frontend.
 
 	private void mandarGeneracionActual(){
-		StringBuilder JSCommand=new StringBuilder("proximaGeneracion({min:"+minimoIndividuo.valorFuncionObjetivo+",pro:"+promedio+",max:"+maximoIndividuo.valorFuncionObjetivo+",individuos:[");
+		// TODO
+		/*StringBuilder JSCommand=new StringBuilder("proximaGeneracion({min:"+minimoIndividuo.valorFuncionObjetivo+",pro:"+promedio+",max:"+maximoIndividuo.valorFuncionObjetivo+",individuos:[");
 		
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
 		for (int i = 0; i < tamañoPoblacion; i++)
 			poblacionAsJSON[i]=poblacionActual[i].toJSONObject();
 		
 		JSCommand.append(String.join(",",poblacionAsJSON)+"]});");
-		webEngine.executeScript(JSCommand.toString());
+		webEngine.executeScript(JSCommand.toString());*/
 	}
 
 	public void iniciarSimulacion(int cantidadIndividuos, int tipoSeleccion,boolean conElitismo){
-		tamañoPoblacion=cantidadIndividuos%2==0?
+		// TODO
+		/*tamañoPoblacion=cantidadIndividuos%2==0?
 			cantidadIndividuos
 			:cantidadIndividuos-1;
 		seleccionPorRango=tipoSeleccion==2;
 		elitismo=conElitismo;
 		reiniciar();
 
-		mandarGeneracionActual();
+		mandarGeneracionActual();*/
 	}
 
 	public void siguienteGeneracion(){
