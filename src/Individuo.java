@@ -88,11 +88,11 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	}
 
 	public String toJSONObject() {
-		StringBuilder sb = new StringBuilder("[");
+		StringBuilder sb = new StringBuilder("{\"longitud\":"+(valorFuncionObjetivo/1000)+",\"recorrido\":[");
 		for(int valorGen : cromosoma){
 			sb.append(valorGen+",");
 		}
-		return sb.toString()+"]";
+		return sb.toString()+"]}";
 	}
 	
 	@Override

@@ -5,24 +5,24 @@ if(!app)
 			proximaGeneracion({
 				individuos:new Array(10).fill().map((el,i)=>({
 					fitness:0.7
-					,cromosoma:'010100101011001010010101'
-					,valorDecimal:5419669
+					,recorrido:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,16,17,18,19,20,21,22,23]
+					,longitud:5419669
 				}))
-				,min:0
-				,pro:.5
-				,max:Math.random()
+				,min:1000
+				,med:5000
+				,max:40000
 			});
 		}
 		,iniciarSimulacion:function(){
 			proximaGeneracion({
 				individuos:new Array(10).fill().map((el,i)=>({
 					fitness:0.7
-					,cromosoma:'010100101011001010010101'
-					,valorDecimal:5419669
+					,recorrido:[23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,1,2,3,4,5,0]
+					,longitud:5419669
 				}))
-				,min:0
-				,pro:.5
-				,max:1
+				,min:1000
+				,med:5000
+				,max:40000
 			});
 		}
 	};
@@ -91,6 +91,7 @@ var generaciones=[];
 }
 */
 function proximaGeneracion(generacion){
+	// Actualizar gráfico.
 	generaciones.push(generacion);
 	grafico.data.addRow([
 		generaciones.length
@@ -99,6 +100,8 @@ function proximaGeneracion(generacion){
 		,generacion.min
 	]);
 	actualizarGrafico();
+
+	// generaciones
 	let generacionesTabla=gEt('generaciones');
 	let nuevaGeneracion=document.createElement('DIV');
 	nuevaGeneracion.classList.add('generaciones-n');

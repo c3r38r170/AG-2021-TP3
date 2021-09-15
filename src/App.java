@@ -30,9 +30,9 @@ public class App extends JFrame {
 	private double[] vectorFitness;
 	
 	private Individuo maximoTotal;
-	private Individuo maximoIndividuo;
-	private Individuo minimoIndividuo;
-	private double promedio;
+	// private Individuo maximoIndividuo;
+	// private Individuo minimoIndividuo;
+	// private double promedio;
 	private double sumatoriaPuntuaciones=0;
 	
 	private int tamañoPoblacion=0;
@@ -118,7 +118,7 @@ public class App extends JFrame {
 			recorrido+=obtenerDistanciaEntre(ultimoDestino,provincia);
 			ultimoDestino=provincia;
 		}
-		// El inverso de la cantidad de kilómetros.
+		// El inverso de la cantidad de miles de kilómetros.
 		// Los recorridos tienen probabilidades relativas proporcionales.
 		// (Si un recorrido es el doble de largo que el otro, tiene la mitad del fitness.)
 		return 1000/recorrido;
@@ -204,7 +204,7 @@ public class App extends JFrame {
 		}
 		
 		ordenarPoblacion(poblacionActual);
-		calcularMinMaxPro();
+		// calcularMinMaxPro();
 	}
 	
   // Función para realizar cada generación de la simulación.
@@ -271,7 +271,7 @@ public class App extends JFrame {
 		ordenarPoblacion(nuevaPoblacion);
 		poblacionActual=nuevaPoblacion;
 		
-		calcularMinMaxPro();
+		// calcularMinMaxPro();
 	}
 
 	private int elegirIndicePorRuleta(double[] vectorFitness, int evitar) {
@@ -315,24 +315,28 @@ public class App extends JFrame {
 
   // Función que calcula Mínimo, Máximo y Promedio de cada generación.
   // Solo calcula el promedio, ya que los individuos se encuentran ordenados en la población.
-	private void calcularMinMaxPro(){
-		maximoIndividuo=poblacionActual[0];
-		minimoIndividuo=poblacionActual[tamañoPoblacion-1];
-		promedio=sumatoriaPuntuaciones/tamañoPoblacion;
-	}
+	// private void calcularMinMaxPro(){
+	// 	maximoIndividuo=poblacionActual[0];
+	// 	minimoIndividuo=poblacionActual[tamañoPoblacion-1];
+	// 	// promedio=sumatoriaPuntuaciones/tamañoPoblacion;
+	// 	// if(maximoIndividuo>)
+	// }
 
 	// API para el frontend.
 
 	private void mandarGeneracionActual(){
 		// TODO
-		/*StringBuilder JSCommand=new StringBuilder("proximaGeneracion({min:"+minimoIndividuo.valorFuncionObjetivo+",pro:"+promedio+",max:"+maximoIndividuo.valorFuncionObjetivo+",individuos:[");
+		double mediano=tamañoPoblacion%2==0?
+			(poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo+poblacionActual[tamañoPoblacion/2+1].valorFuncionObjetivo)/2
+			:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
+		StringBuilder JSCommand=new StringBuilder("proximaGeneracion({min:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",max:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
 		
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
 		for (int i = 0; i < tamañoPoblacion; i++)
 			poblacionAsJSON[i]=poblacionActual[i].toJSONObject();
 		
 		JSCommand.append(String.join(",",poblacionAsJSON)+"]});");
-		webEngine.executeScript(JSCommand.toString());*/
+		webEngine.executeScript(JSCommand.toString());
 	}
 
 	public void iniciarSimulacion(int cantidadIndividuos, int tipoSeleccion,boolean conElitismo){
