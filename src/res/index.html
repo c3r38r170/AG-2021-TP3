@@ -123,7 +123,9 @@
 
 	<div class="container-fluid pt-5" id=container-principal>
 		<div class="row" id="individuo-mejor">
-			<div class="individuo"></div>
+			<!-- TODO quizás querramos cambiar el texto este -->
+			<span>Mejor Recorrido hasta ahora:</span>
+			<span id=individuo-mejor-longitud></span>
 		</div>
 		<div class="row" id=row-principal>
 			<div class="col" id=generaciones-mapa>
@@ -163,6 +165,7 @@
 	</div>
 	</div>
 	<script type="text/javascript">
+	// TODO bloquear zoom y desplazamiento
 		let newMap=(target)=>new ol.Map({
 			target,
 			layers: [
@@ -172,8 +175,10 @@
 			],
 			view: new ol.View({
 				center: ol.proj.fromLonLat([-63.616672,-40.416097]),
-				zoom: 4
+				zoom: 4.5
 			})
+			,controls:[]
+			,interactions: []
 		});
 		var mapaGeneraciones = newMap('map-generaciones')
 		var mapaIndividuo = newMap('map-individuo')

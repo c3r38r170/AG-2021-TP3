@@ -127,9 +127,9 @@ function mostrarIndividuo(generacionID,individuoID){
 // cambiarRecorrido(mapa,layer)
 
 //important methods
-var tableData=[];
 var gEt=id=>document.getElementById(id);
 var qS=selector=>document.querySelectorAll(selector);
+var mejorHastaAhora;
 var generaciones=[];
 /*formato de la generación:
 {
@@ -141,7 +141,7 @@ var generaciones=[];
 		}
 	]
 	,peor:
-	,pro:
+	,med:
 	,mejor:
 }
 */
@@ -154,6 +154,9 @@ function proximaGeneracion(generacion){
 	} */
 	// generacion.individuos=generacion.individuos.map(el=>coordenadas[el]);
 	generaciones.push(generacion);
+
+	if(!mejorHastaAhora || generacion.individuos[0].longitud<mejorHastaAhora.longitud)
+		actualizarMejorHastaAhora(generacion.individuos[0]);
 
 	let nuevaGeneracion=document.createElement('DIV');
 	nuevaGeneracion.classList.add('generaciones-n');
@@ -177,6 +180,11 @@ function proximaGeneracion(generacion){
 	gEt('generaciones').append(nuevaGeneracion);
 }
 
+function actualizarMejorHastaAhora(individuo){
+	mejorHastaAhora=individuo;
+	
+}
+
 //onload
 addEventListener('DOMContentLoaded',()=>{
 	//TODO quitar, jQuery está prohibido
@@ -187,7 +195,6 @@ addEventListener('DOMContentLoaded',()=>{
 	$('#modalAjuste').modal('show'); */
 
 	gEt('modal-iniciar').onclick=()=>{
-		grafico.data=crearData();
 		generaciones=[];
 		for(let generacion of [...qS('.generaciones-n')])
 			generacion.remove();

@@ -34,6 +34,9 @@ nav{
 #container-principal{
 	width: 80%;
 }
+	#individuo-mejor-longitud::after{
+		content:' km.';
+	}
 			#row-principal > .col{
 				height: 100%;
 				overflow-y: auto;overflow-x: hidden;
