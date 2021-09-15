@@ -143,11 +143,12 @@ public class App extends JFrame {
 	// public void start(Stage primaryStage) throws Exception {
 	public App(){
 
-		System.out.println(obtenerDistanciaEntre(0,1));
-		System.out.println(obtenerDistanciaEntre(21,22));
-		System.out.println(obtenerDistanciaEntre(23,22));
+		// TODO remove
+		// System.out.println(obtenerDistanciaEntre(0,1));
+		// System.out.println(obtenerDistanciaEntre(21,22));
+		// System.out.println(obtenerDistanciaEntre(23,22));
 
-		System.exit(0);
+		// System.exit(0);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -329,7 +330,8 @@ public class App extends JFrame {
 		double mediano=tamañoPoblacion%2==0?
 			(poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo+poblacionActual[tamañoPoblacion/2+1].valorFuncionObjetivo)/2
 			:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
-		StringBuilder JSCommand=new StringBuilder("proximaGeneracion({min:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",max:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
+			// TODO check si mejor y peor son correctos
+		StringBuilder JSCommand=new StringBuilder("proximaGeneracion({peor:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",mejor:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
 		
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
 		for (int i = 0; i < tamañoPoblacion; i++)

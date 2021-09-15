@@ -18,7 +18,7 @@
 	<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
 
 		<!-- Charts -->
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
 	
 	<!-- Código -->
 	<script type="text/javascript" src="site.js"></script>
@@ -47,7 +47,7 @@
 	</header>
 	<!--Fin Navbar-->
 
-	<!-- Hacer un nav como la gente -->
+	<!-- Hacer un modal como la gente -->
 <div>
 	<div style="display:flex;margin:auto;"></div>
 </div>
@@ -61,8 +61,7 @@
 		<div class="heuristica_gentico"></div>
 		<div class="genetico_izq"></div>
 		<div class="genetico_der"></div>
-	  </div>
-
+	</div>
 	<div class="modal fade" id="modalAjuste" tabindex="-1" role="dialog" aria-labelledby="modalAjusteTitulo"
 		aria-hidden="true">
 		<div class="modal-dialog" role="document">
@@ -123,54 +122,62 @@
 	<!-- Fin Modal-->
 
 	<div class="container-fluid pt-5" id=container-principal>
+		<div class="row" id="individuo-mejor">
+			<div class="individuo"></div>
+		</div>
 		<div class="row" id=row-principal>
-			<div class="col">
+			<div class="col" id=generaciones-mapa>
 				<h2 class="pt-2 border-bottom">Mapa</h2>
 				<!-- <div id="generacionesChart"></div> -->
-				<div id="map" class="map"></div>
-				<div class="container pt-1">
-					<div class="btn-group" role="group" aria-label="Modal Ajuste" id=controles>
-						<div class="input-group">
-							<input type="number" class="form-control" placeholder="Pasos" id="controles-pasos"
-								aria-label="Input group example" aria-describedby="btnGroupAddon" value=1 min=1>
-						</div>
-						<button type="button" class="btn btn-dark" id="controles-siguiente"><i
-								class="fas fa-forward"></i></button>
+				<div id="map-generaciones" class="map"></div>
+				<div class="btn-group" role="group" aria-label="Modal Ajuste" id=controles>
+					<div class="input-group">
+						<input type="number" class="form-control" placeholder="Pasos" id="controles-pasos"
+							aria-label="Input group example" aria-describedby="btnGroupAddon" value=1 min=1>
 					</div>
+					<button type="button" class="btn btn-dark" id="controles-siguiente"><i
+							class="fas fa-forward"></i></button>
 				</div>
 			</div>
-			<div class="col">
+			<div class="col" id=generaciones-tabla>
 				<h2 class="pt-2 border-bottom">Tabla de generaciones:</h2>
 				<div id=generaciones>
 					<div id="generaciones-header">
 						<span>N°</span>
-						<span>Mínimo</span>
-						<span>Promedio</span>
-						<span>Máximo</span>
+						<span>Peor</span>
+						<span>Mediano</span>
+						<span>Mejor</span>
 						<span></span><!-- spacer -->
 					</div>
 				</div>
 			</div>
-			<div class="col">
-				<div id="map" class="map"></div>
+			<div class="col" id=individuo-mapa>
+				<h2 class="pt-2 border-bottom">Individuo seleccionado:</h2>
+				<div id="individuo-mapa-container">
+					<div id="map-individuo" class="map"></div>
+					<ul id=individuo-recorrido></ul>
+					<span id=individuo-longitud>Longitud del recorrido: <span id="individuo-recorrido-valor"></span></span>
+				</div>
 			</div>
 		</div>
 	</div>
 	</div>
 	<script type="text/javascript">
-		var map = new ol.Map({
-		  target: 'map',
-		  layers: [
-			new ol.layer.Tile({
-			  source: new ol.source.OSM()
+		let newMap=(target)=>new ol.Map({
+			target,
+			layers: [
+				new ol.layer.Tile({
+					source: new ol.source.OSM()
+				})
+			],
+			view: new ol.View({
+				center: ol.proj.fromLonLat([-63.616672,-40.416097]),
+				zoom: 4
 			})
-		  ],
-		  view: new ol.View({
-			center: ol.proj.fromLonLat([37.41, 8.82]),
-			zoom: 4
-		  })
 		});
-	  </script>
+		var mapaGeneraciones = newMap('map-generaciones')
+		var mapaIndividuo = newMap('map-individuo')
+		</script>
 </body>
 
 </html>
