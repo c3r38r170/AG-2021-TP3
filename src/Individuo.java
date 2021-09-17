@@ -15,6 +15,11 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			this.cromosoma.add(i);
 		this.longitudDelCromosoma = cromosoma.length;
 	}
+
+	public Individuo(ArrayList<Integer> cromosoma){
+		this.cromosoma =cromosoma;
+		longitudDelCromosoma =cromosoma.size();
+	}
 	
 	public Individuo[] crossover(Individuo pareja){
 		if(this.equals(pareja)){
@@ -64,8 +69,9 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	
 	public boolean aplicarMutacion(){
 		if(Math.random()<Individuo.PROBABILIDAD_DE_MUTACIÓN){
-			int gen1=Utils.randomIntBetween(0, this.longitudDelCromosoma);
-			int gen2=Utils.randomIntBetween(0, this.longitudDelCromosoma);
+			int primerGen=inicioFijo?1:0;
+			int gen1=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma);
+			int gen2=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma);
 			
 			// Método de Mutación: swapping
 			int temp=cromosoma.get(gen1);

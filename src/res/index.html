@@ -125,12 +125,15 @@
 		<div class="row" id="individuo-mejor">
 			<!-- TODO quizás querramos cambiar el texto este -->
 			<span>Mejor Recorrido hasta ahora:</span>
-			<span id=individuo-mejor-longitud></span>
+			<span id=individuo-mejor-longitud class=kilometros></span>
 		</div>
 		<div class="row" id=row-principal>
 			<div class="col" id=generaciones-mapa>
 				<h2 class="pt-2 border-bottom">Mapa</h2>
-				<!-- <div id="generacionesChart"></div> -->
+				<div id="generaciones-datos">
+					<span id=generaciones-datos-mejor>Mejor recorrido: <span id="generaciones-datos-mejor-longitud" class=kilometros></span></span>
+					<span id=generaciones-datos-peor>Peor recorrido: <span id="generaciones-datos-peor-longitud" class=kilometros></span></span>
+				</div>
 				<div id="map-generaciones" class="map"></div>
 				<div class="btn-group" role="group" aria-label="Modal Ajuste" id=controles>
 					<div class="input-group">
@@ -157,8 +160,11 @@
 				<h2 class="pt-2 border-bottom">Individuo seleccionado:</h2>
 				<div id="individuo-mapa-container">
 					<div id="map-individuo" class="map"></div>
-					<ul id=individuo-recorrido></ul>
-					<span id=individuo-longitud>Longitud del recorrido: <span id="individuo-recorrido-valor"></span></span>
+					<div>
+						<h3>Recorrido:</h3>
+						<ul id=individuo-recorrido></ul>
+					</div>
+					<span id=individuo-longitud>Longitud del recorrido: <span id="individuo-recorrido-valor" class=kilometros></span></span>
 				</div>
 			</div>
 		</div>
@@ -175,13 +181,33 @@
 			],
 			view: new ol.View({
 				center: ol.proj.fromLonLat([-63.616672,-40.416097]),
-				zoom: 4.5
+				zoom: 4.3
 			})
 			,controls:[]
 			,interactions: []
 		});
-		var mapaGeneraciones = newMap('map-generaciones')
-		var mapaIndividuo = newMap('map-individuo')
+		var mapaGeneraciones = {
+			mapa:newMap('map-generaciones')
+			,layers:{
+				mejor:{
+					layer:null
+					,color:'green'
+				}
+				,peor:{
+					layer:null
+					,color:'red'
+				}
+			}
+		};
+		var mapaIndividuo = {
+			mapa:newMap('map-individuo')
+			,layers:{
+				unico:{
+					layer:null
+					,color:'#319FD3'
+				}
+			}
+		};
 		</script>
 </body>
 

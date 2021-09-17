@@ -30,11 +30,22 @@ nav{
 }
 #container-principal,#row-principal{
 	height: 100%;
+	overflow: hidden;
 }
 #container-principal{
-	width: 80%;
+	width: 90%;
+	display: flex;
+	flex-direction: column;
 }
-	#individuo-mejor-longitud::after{
+	#individuo-mejor{
+		margin: 1rem auto 0 auto;
+		border-radius: 1rem;
+		border: solid var(--dark);
+		text-align: center;
+		cursor: pointer;
+		width: 20%;
+	}
+	.kilometros::after{
 		content:' km.';
 	}
 			#row-principal > .col{
@@ -44,19 +55,30 @@ nav{
 
 				display: flex;flex-direction: column;
 			}
-			#generacionesChart{
-				width: min-content;
-				margin: auto;
+			#generaciones-datos{
+				font-weight: bold;
+				white-space: nowrap;
 			}
+				#generaciones-datos > span {
+					width: 50%;
+					display: inline-block;
+				}
+					#generaciones-datos-mejor{
+						color: green;
+					}
+					#generaciones-datos-peor{
+						color: red;
+					}
 			#controles{
 				display: flex;
 				width: 50%;
-				margin: 2rem auto;
+				margin: 1rem auto;
 			}
 			#generaciones{
 				display: grid;
 				overflow:auto;
 				gap: 0.5rem;
+				scroll-behavior: smooth;
 			}
 			#generaciones span{
 				text-align: center;
@@ -74,6 +96,7 @@ nav{
 						font-weight: bold;
 						color: var(--dark);
 						border: solid var(--dark);
+						z-index: 1;background: white;
 					}
 					.generaciones-n{
 						display: flex;flex-direction: column-reverse;
@@ -116,9 +139,17 @@ nav{
 						display: grid;
 						grid-template-columns: 1fr 3fr;
 						cursor: pointer;
+
+						position: relative;
 					}
-						.generaciones-n-individuo:hover{
-							background:#DDD !important;
+						.generaciones-n-individuo:hover::before {
+							content: '';
+							position: absolute;
+							height: 100%;
+							width: 100%;
+							top: 0;
+							left: 0;
+							background: rgba(0,0,0,.3);
 						}
 						.generaciones-n-individuo:nth-child(2n-1)
 						/*,.generaciones-n-individuos > span:nth-child(4n-1) 
@@ -126,16 +157,24 @@ nav{
 						,.generaciones-n-individuos > span:nth-child(8n-3) */{
 							background: #EEE;
 						}
-
+							.generaciones-n-individuo-selected{
+								background:#84bffa !important;
+							}
 			#individuo-mapa-container{
 				display: grid;
-				grid-template: "a b" 1fr "c c"/3fr 1fr;
+				grid-template: "a b" 1fr "c c"/3fr 2fr;
 				height:100%;
 			}
 				#individuo-longitud{
 					grid-area: c;
-					margin: 2rem 0;
+					margin: 1rem 0;
 				}
+				#individuo-recorrido{
+					font-size:smaller;
+				}
+					#individuo-recorrido > li:first-child {
+						font-weight: bold;
+					}
 
 
 					/* Auto generado por una buena pagina muy honesta y laburante */

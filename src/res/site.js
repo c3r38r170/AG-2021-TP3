@@ -2,27 +2,21 @@
 if(!app)
 	var app={
 		siguienteGeneracion:function(){
-			proximaGeneracion({
-				individuos:new Array(10).fill().map((el,i)=>({
+			proximaGeneracion(
+				new Array(10).fill().map((el,i)=>({
 					recorrido:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,16,17,18,19,20,21,22,23].sort(()=>Math.random()-.5)
 					,longitud:Math.round(Math.random()*5419669)
 				}))
-				,peor:1000
-				,med:5000
-				,mejor:40000
-			});
+			);
 		}
 		,iniciarSimulacion:function(){
-			proximaGeneracion({
-				individuos:new Array(10).fill().map((el,i)=>({
+			proximaGeneracion(
+				new Array(10).fill().map((el,i)=>({
 					fitness:0.7
 					,recorrido:[23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,1,2,3,4,5,0].sort(()=>Math.random()-.5)
 					,longitud:Math.random(Math.random()*5419669)
 				}))
-				,peor:1000
-				,med:5000
-				,mejor:40000
-			});
+			);
 		}
 	};
 
@@ -94,13 +88,23 @@ var layer;
 
 // manipulación de mapas
 function mostrarIndividuo(generacionID,individuoID){
-	let individuo=generaciones[+generacionID].individuos[+individuoID];
+	let individuo=generaciones[+generacionID][+individuoID];
 
 	gEt('individuo-recorrido-valor').innerText=individuo.longitud;
 
-	mapaIndividuo.removeLayer(layer);
-	let recorrido =individuo.recorrido.map(el=>ol.proj.fromLonLat(coordenadas[el]));
-	layer = new ol.layer.Vector({
+	cambiarRecorrido(mapaIndividuo,'unico',individuo.recorrido);
+
+	let listaHolder=gEt('individuo-recorrido');
+	listaHolder.innerHTML=
+		individuo.recorrido.reduce((acc,el)=>acc+`<li>${nombresProvincias[el]}</li>`,'');
+}
+
+function cambiarRecorrido(mapa,layerName,recorrido) {
+	let layerObj=mapa.layers[layerName];
+	mapa.mapa.removeLayer(layerObj.layer);
+	
+	recorrido =recorrido.map(el=>ol.proj.fromLonLat(coordenadas[el]));
+	let layer = new ol.layer.Vector({
 		source: new ol.source.Vector({
 			features: [
 				new ol.Feature({
@@ -114,22 +118,20 @@ function mostrarIndividuo(generacionID,individuoID){
 					color: 'white'
 			}),
 			stroke: new ol.style.Stroke({
-					color: '#319FD3',
+					color: layerObj.color,
 					width: 1
 			})
 		})
 	});
-	mapaIndividuo.addLayer(layer);
 
+	mapa.mapa.addLayer(layer);
+	mapa.layers[layerName].layer=layer;
 }
-
-// TODO
-// cambiarRecorrido(mapa,layer)
 
 //important methods
 var gEt=id=>document.getElementById(id);
 var qS=selector=>document.querySelectorAll(selector);
-var mejorHastaAhora;
+var mejorLongitudHastaAhora=Infinity;
 var generaciones=[];
 /*formato de la generación:
 {
@@ -146,18 +148,12 @@ var generaciones=[];
 }
 */
 function proximaGeneracion(generacion){
-	// generaciones
-	/* let tempIndividuos=[];
-	for(let individuo of generacion.individuos){
-		tempIndividuos.push(individuo);
-		tempIndividuos[tempIndividuos.length-1]=.recorrido.map(el=>coordenadas[el]);
-	} */
-	// generacion.individuos=generacion.individuos.map(el=>coordenadas[el]);
 	generaciones.push(generacion);
 
-	if(!mejorHastaAhora || generacion.individuos[0].longitud<mejorHastaAhora.longitud)
-		actualizarMejorHastaAhora(generacion.individuos[0]);
+	if(generacion[0].longitud<mejorLongitudHastaAhora)
+		actualizarMejorHastaAhora(generacion[0]);
 
+	// Tabla de generaciones
 	let nuevaGeneracion=document.createElement('DIV');
 	nuevaGeneracion.classList.add('generaciones-n');
 	nuevaGeneracion.dataset.id=generaciones.length-1;
@@ -165,24 +161,60 @@ function proximaGeneracion(generacion){
 <div class="generaciones-n-individuos">
 	<span class="generaciones-n-individuos-header">Individuo</span>
 	<span class="generaciones-n-individuos-header">Longitud del recorrido</span>
-	${generacion.individuos.reduce((acc,el,i)=>acc+='<div class=generaciones-n-individuo>'+[
+	${generacion.reduce((acc,el,i)=>acc+='<div class=generaciones-n-individuo>'+[
 			i+1
 			,el.longitud
 		].reduce((ac,e)=>ac+`<span>${e}</span>`,'')+'</div>','')}
 </div>
 <div class="generaciones-n-resumen">
 	<span>${generaciones.length}</span>
-	<span>${generacion.peor}</span>
-	<span>${generacion.med}</span>
-	<span>${generacion.mejor}</span>
+	<span>${generacion[generacion.length - 1].longitud}</span>
+	<span>${generacion.length%2==0? //Mediano
+		(generacion[generacion.length/2].longitud+generacion[generacion.length/2+1].longitud)/2
+		:generacion[Math.floor(generacion.length/2)].longitud}</span>
+	<span>${generacion[0].longitud}</span>
 </div>
 `;
 	gEt('generaciones').append(nuevaGeneracion);
+
+	seleccionarGeneracion(nuevaGeneracion.children[1]);
 }
 
 function actualizarMejorHastaAhora(individuo){
-	mejorHastaAhora=individuo;
-	
+	mejorLongitudHastaAhora=individuo.longitud;
+	let individuoMejor=gEt('individuo-mejor');
+	individuoMejor.dataset.generacionID=generaciones.length-1;
+	individuoMejor.children[1].innerText=mejorLongitudHastaAhora;
+}
+
+function seleccionarIndividuo(individuo){
+	if(individuo.classList.contains('generaciones-n-individuo-selected'))
+		return;
+	let selected=qS('.generaciones-n-individuo-selected');
+	if(selected.length)
+		selected[0].classList.remove('generaciones-n-individuo-selected');
+	individuo.classList.add('generaciones-n-individuo-selected');
+	mostrarIndividuo(individuo.closest('.generaciones-n').dataset.id,individuo.firstElementChild.innerText-1);
+}
+
+function seleccionarGeneracion(generacion,poblacion=generaciones[generacion.firstElementChild.innerText-1]) { //generacion es un '.generaciones-n-resumen'
+	let showing=qS('.generaciones-n-individuos-shown');
+	if(showing.length && showing[0]!=generacion.previousElementSibling)
+		showing[0].classList.remove('generaciones-n-individuos-shown');
+	let thisResumenCL=generacion.previousElementSibling.classList;
+	if(thisResumenCL.contains('generaciones-n-individuos-shown'))
+		thisResumenCL.remove('generaciones-n-individuos-shown');
+	else{
+		thisResumenCL.add('generaciones-n-individuos-shown');
+
+		let mejor=poblacion[0]
+			,peor=poblacion[poblacion.length - 1];
+		// Mapa
+		cambiarRecorrido(mapaGeneraciones,'mejor',mejor.recorrido);
+		cambiarRecorrido(mapaGeneraciones,'peor',peor.recorrido);
+		gEt('generaciones-datos-mejor-longitud').innerText=mejor.longitud;
+		gEt('generaciones-datos-peor-longitud').innerText=peor.longitud;
+	}
 }
 
 //onload
@@ -198,6 +230,7 @@ addEventListener('DOMContentLoaded',()=>{
 		generaciones=[];
 		for(let generacion of [...qS('.generaciones-n')])
 			generacion.remove();
+		
 		app.iniciarSimulacion(
 			gEt('modal-individuos').value
 			,qS('[name="ruleta"]:checked')[0].value
@@ -206,6 +239,9 @@ addEventListener('DOMContentLoaded',()=>{
 	};
 
 	gEt('controles-siguiente').onclick=()=>{
+		// TODO quitar
+		if(!generaciones.length)
+			app.iniciarSimulacion();
 		for(let i=0,to=gEt('controles-pasos').value;i<to;i++)
 			app.siguienteGeneracion();
 	}
@@ -214,13 +250,22 @@ addEventListener('DOMContentLoaded',()=>{
 		let t=e.target;
 		let resumen=t.closest('.generaciones-n-resumen');
 		if(resumen){
-			resumen.previousElementSibling.classList.toggle('generaciones-n-individuos-shown');
+			seleccionarGeneracion(resumen);
 		}else{
 			let individuo=t.closest('.generaciones-n-individuo');
 			if(individuo)
-				mostrarIndividuo(t.closest('.generaciones-n').dataset.id,individuo.firstElementChild.innerText-1);
+				seleccionarIndividuo(individuo);
 		}
 	}
+
+	// This shouldn't break, but be prepared for it.
+	gEt('individuo-mejor').onclick=e=>{
+		let generacionDiv=gEt('generaciones').children[1+(+e.target.closest('#individuo-mejor').dataset.generacionID)];
+		let [individuosDiv,resumenDiv]=generacionDiv.children;
+		seleccionarIndividuo(individuosDiv.children[2])
+		seleccionarGeneracion(resumenDiv);
+		generacionDiv.scrollIntoView(false);
+	};
 
 	// TODO esto es parte del modal
 	gEt('modal-rango').onclick=()=>{
@@ -233,42 +278,3 @@ addEventListener('DOMContentLoaded',()=>{
 		gEt('modal-elitismo').disabled=false;
 	}
 });
-
-// Pruebas de OpenLayers
-
-function pruebaDeCoordenadas(){
-	// var lines = new ol.geom.LineString(coordenadas)
-	// .transform('EPSSG:3857', mapaGeneraciones.getView().getProjection());
-
-var layer = new ol.layer.Vector({
-  source: new ol.source.Vector({
-    features: [
-      // new ol.Feature({
-      //   geometry: new ol.geom.LineString(coordenadas.map(el=>ol.proj.fromLonLat(el))).transform('EPSG:3857', mapaGeneraciones.getView().getProjection()),
-      //   name: "Line",
-      // }),
-      new ol.Feature({
-        geometry: new ol.geom.LineString(coordenadas.map(el=>ol.proj.fromLonLat(el))),
-        name: "Line",
-      }),
-    ],
-  })
-	,style:new ol.style.Style({
-    fill: new ol.style.Fill({
-      	color: 'white'
-    }),
-    stroke: new ol.style.Stroke({
-      	color: '#319FD3',
-      	width: 1
-    })
-	})
-});
-mapaGeneraciones.addLayer(layer);
-}
-
-
-function pointMapTo(coords){
-	coords=ol.proj.fromLonLat(coords);
-	// mapaGeneraciones.setCoordinates(coords);
-	mapaGeneraciones.getView().setCenter(coords);
-}

@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -177,9 +178,13 @@ public class App extends JFrame {
 		setIconImage(new ImageIcon(getClass().getResource("/res/Logo AG.png")).getImage());
 		setTitle("Algoritmos Genéticos - TP3");
 		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+		// TODO define
 		setSize(screenSize.width*3/4,screenSize.height*3/4);
 		setLocation(screenSize.width/8, screenSize.height/8);
+		/*setSize(screenSize);
+		setLocation(0,0);*/
 		setVisible(true);
+		setExtendedState( getExtendedState()|JFrame.MAXIMIZED_BOTH );
 	}
 	
   // Función para iniciar la simulación.
@@ -188,7 +193,13 @@ public class App extends JFrame {
 		// Generación de la primera población aleatoria.
 		poblacionActual=new Individuo[tamañoPoblacion];
 		for(int i=0;i<tamañoPoblacion;i++){
-			int[] cromosoma=new int[App.PROVINCIAS.length];
+			ArrayList<Integer> cromosoma= new ArrayList<>();
+			for(int j=0;j<App.PROVINCIAS.length;j++)
+				cromosoma.add(j);
+			Collections.shuffle(cromosoma);
+			poblacionActual[i]=new Individuo(cromosoma);
+
+			/* int[] cromosoma=new int[App.PROVINCIAS.length];
 			
 			for(int j=0;j<App.PROVINCIAS.length;j++)
 				cromosoma[j]=j;
@@ -197,11 +208,11 @@ public class App extends JFrame {
 				
 			Individuo newIndividuo=new Individuo(cromosoma);
 			
-			poblacionActual[i]=newIndividuo;
+			poblacionActual[i]=newIndividuo;*/
 			
-			double fitness=objetivo(poblacionActual[i]);
-			poblacionActual[i].valorFuncionObjetivo=fitness;
-			sumatoriaPuntuaciones+=fitness;
+			double puntuacion=objetivo(poblacionActual[i]);
+			poblacionActual[i].valorFuncionObjetivo=puntuacion;
+			sumatoriaPuntuaciones+=puntuacion;
 		}
 		
 		ordenarPoblacion(poblacionActual);
@@ -327,31 +338,39 @@ public class App extends JFrame {
 
 	private void mandarGeneracionActual(){
 		// TODO
-		double mediano=tamañoPoblacion%2==0?
-			(poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo+poblacionActual[tamañoPoblacion/2+1].valorFuncionObjetivo)/2
-			:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
+		// double mediano=tamañoPoblacion%2==0?
+		// 	(poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo+poblacionActual[tamañoPoblacion/2+1].valorFuncionObjetivo)/2
+		// 	:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
 			// TODO check si mejor y peor son correctos
-		StringBuilder JSCommand=new StringBuilder("proximaGeneracion({peor:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",mejor:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
+		// StringBuilder JSCommand=new StringBuilder("proximaGeneracion({peor:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",mejor:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
+		StringBuilder JSCommand=new StringBuilder("proximaGeneracion([");
 		
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
 		for (int i = 0; i < tamañoPoblacion; i++)
 			poblacionAsJSON[i]=poblacionActual[i].toJSONObject();
 		
-		JSCommand.append(String.join(",",poblacionAsJSON)+"]});");
+		// JSCommand.append(String.join(",",poblacionAsJSON)+"]});");
+		JSCommand.append(String.join(",",poblacionAsJSON)+"]);");
 		webEngine.executeScript(JSCommand.toString());
 	}
 
+	public void iniciarSimulacion(){
+		tamañoPoblacion=10;
+		reiniciar();
+		mandarGeneracionActual();
+	}
+/* 
 	public void iniciarSimulacion(int cantidadIndividuos, int tipoSeleccion,boolean conElitismo){
 		// TODO
-		/*tamañoPoblacion=cantidadIndividuos%2==0?
+		tamañoPoblacion=cantidadIndividuos%2==0?
 			cantidadIndividuos
 			:cantidadIndividuos-1;
 		seleccionPorRango=tipoSeleccion==2;
 		elitismo=conElitismo;
 		reiniciar();
 
-		mandarGeneracionActual();*/
-	}
+		mandarGeneracionActual();
+	} */
 
 	public void siguienteGeneracion(){
 		nuevaGeneracion();
