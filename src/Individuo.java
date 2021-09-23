@@ -8,17 +8,28 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	ArrayList<Integer> cromosoma=new ArrayList<>();
 	int longitudDelCromosoma;
 	double valorFuncionObjetivo;
+	int longitud=0;
 	boolean inicioFijo=false;
 	
 	public Individuo(int[] cromosoma){
 		for(int i :cromosoma)
 			this.cromosoma.add(i);
 		this.longitudDelCromosoma = cromosoma.length;
+		calcularLongitud();
 	}
 
 	public Individuo(ArrayList<Integer> cromosoma){
 		this.cromosoma =cromosoma;
 		longitudDelCromosoma =cromosoma.size();
+		calcularLongitud();
+	}
+
+	private void calcularLongitud(){
+		int ultimoDestino=cromosoma.get(cromosoma.size()-1);
+		for(int provincia: cromosoma){
+			longitud+=App.obtenerDistanciaEntre(ultimoDestino,provincia);
+			ultimoDestino=provincia;
+		}
 	}
 	
 	public Individuo[] crossover(Individuo pareja){
@@ -30,10 +41,9 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 		}
 
 		List<List<Integer>> ciclos=new ArrayList<>();
-		List<Boolean> indicesVisitados=new ArrayList<>();
-		Collections.fill(indicesVisitados, false);
-		
-		while(indicesVisitados.contains(true)){
+		List<Boolean> indicesVisitados=new ArrayList<> (Collections.nCopies(longitudDelCromosoma, false));
+
+		while(indicesVisitados.contains(false)){
 			ciclos.add(new ArrayList<>());
 			int cicloActual=ciclos.size()-1;
 			int primerIndice=indicesVisitados.indexOf(false)
@@ -94,7 +104,11 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	}
 
 	public String toJSONObject() {
-		StringBuilder sb = new StringBuilder("{\"longitud\":"+(valorFuncionObjetivo/1000)+",\"recorrido\":[");
+		// TODO ver si no es 1000/
+		StringBuilder sb = new StringBuilder("{\"longitud\":"
+			// +(new DecimalFormat("##.#######")).format(valorFuncionObjetivo/1000)
+			+/* (int)(longDouble*100.0)( */longitud/* /1000) */
+			+",\"recorrido\":[");
 		for(int valorGen : cromosoma){
 			sb.append(valorGen+",");
 		}
@@ -113,7 +127,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	// Este método se usa para ordenar de mejor a peor.
 	@Override
 	public int compareTo(Individuo otro) {
-		double resta=this.valorFuncionObjetivo-otro.valorFuncionObjetivo;
+		double resta=otro.valorFuncionObjetivo-this.valorFuncionObjetivo;
 		return (int)(resta/Math.abs(resta));
 	}
 

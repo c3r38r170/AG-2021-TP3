@@ -79,8 +79,14 @@ TODO crear objeto mapa con mapa y layers
 {
 	mapa:Map
 	,layers:{
-		unica: Layer
-		,mejors: Layer
+		unica: {
+			color: 'color'
+			,layer:Layer
+		}
+		,mejors: {
+			color: 'color'
+			,layer:Layer
+		}
 		...
 	}
 } */
@@ -160,7 +166,7 @@ function proximaGeneracion(generacion){
 	nuevaGeneracion.innerHTML=`
 <div class="generaciones-n-individuos">
 	<span class="generaciones-n-individuos-header">Individuo</span>
-	<span class="generaciones-n-individuos-header">Longitud del recorrido</span>
+	<span class="generaciones-n-individuos-header">Longitud del recorrido (km)</span>
 	${generacion.reduce((acc,el,i)=>acc+='<div class=generaciones-n-individuo>'+[
 			i+1
 			,el.longitud
@@ -168,11 +174,11 @@ function proximaGeneracion(generacion){
 </div>
 <div class="generaciones-n-resumen">
 	<span>${generaciones.length}</span>
-	<span>${generacion[generacion.length - 1].longitud}</span>
-	<span>${generacion.length%2==0? //Mediano
+	<span class="kilometros">${generacion[generacion.length - 1].longitud}</span>
+	<span class="kilometros">${generacion.length%2==0? //Mediano
 		(generacion[generacion.length/2].longitud+generacion[generacion.length/2+1].longitud)/2
 		:generacion[Math.floor(generacion.length/2)].longitud}</span>
-	<span>${generacion[0].longitud}</span>
+	<span class="kilometros">${generacion[0].longitud}</span>
 </div>
 `;
 	gEt('generaciones').append(nuevaGeneracion);
@@ -240,10 +246,13 @@ addEventListener('DOMContentLoaded',()=>{
 
 	gEt('controles-siguiente').onclick=()=>{
 		// TODO quitar
-		if(!generaciones.length)
+		let inicio=0;
+		if(!generaciones.length){
 			app.iniciarSimulacion();
-		for(let i=0,to=gEt('controles-pasos').value;i<to;i++)
-			app.siguienteGeneracion();
+			inicio=1;
+		}else
+			for(let i=inicio,to=gEt('controles-pasos').value;i<to;i++)
+				app.siguienteGeneracion();
 	}
 
 	gEt('generaciones').onclick=e=>{

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.DoubleStream;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -30,10 +31,6 @@ public class App extends JFrame {
 	private Individuo[] poblacionActual;
 	private double[] vectorFitness;
 	
-	private Individuo maximoTotal;
-	// private Individuo maximoIndividuo;
-	// private Individuo minimoIndividuo;
-	// private double promedio;
 	private double sumatoriaPuntuaciones=0;
 	
 	private int tamañoPoblacion=0;
@@ -102,7 +99,7 @@ public class App extends JFrame {
 	};
 	public static HashMap<Set<Integer>,Integer> distancias = new HashMap<>();
 
-	public int obtenerDistanciaEntre(int a,int b){
+	public static int obtenerDistanciaEntre(int a,int b){
 		/* if(a==b)
 			return 0; */
 		HashSet<Integer> set = new HashSet<>();
@@ -112,20 +109,19 @@ public class App extends JFrame {
 	}
 
   // Función que sirve para evaluar el desempeño de cada individuo.
-	private double objetivo(Individuo individuo){
-		int recorrido=0;
-		int ultimoDestino=individuo.cromosoma.get(individuo.cromosoma.size()-1);
-		for(int provincia: individuo.cromosoma){
-			recorrido+=obtenerDistanciaEntre(ultimoDestino,provincia);
-			ultimoDestino=provincia;
-		}
+	private static double objetivo(Individuo individuo){
 		// El inverso de la cantidad de miles de kilómetros.
 		// Los recorridos tienen probabilidades relativas proporcionales.
 		// (Si un recorrido es el doble de largo que el otro, tiene la mitad del fitness.)
-		return 1000/recorrido;
+		return 1000.0/individuo.longitud;
 	}
 	
 	public static void main(String[] args) throws Exception {
+		// double d = 1.234567;
+		// DecimalFormat df = new DecimalFormat("#.##");
+		// System.out.print(df.format(d));
+		// System.exit(0);
+
 		int n=PROVINCIAS.length-1;
 		for(int i=0;i<n;i++){
 			for(int j=0,to=n-i;j<to;j++){
@@ -199,17 +195,6 @@ public class App extends JFrame {
 			Collections.shuffle(cromosoma);
 			poblacionActual[i]=new Individuo(cromosoma);
 
-			/* int[] cromosoma=new int[App.PROVINCIAS.length];
-			
-			for(int j=0;j<App.PROVINCIAS.length;j++)
-				cromosoma[j]=j;
-
-			Collections.shuffle(Arrays.asList(cromosoma));
-				
-			Individuo newIndividuo=new Individuo(cromosoma);
-			
-			poblacionActual[i]=newIndividuo;*/
-			
 			double puntuacion=objetivo(poblacionActual[i]);
 			poblacionActual[i].valorFuncionObjetivo=puntuacion;
 			sumatoriaPuntuaciones+=puntuacion;
@@ -288,20 +273,23 @@ public class App extends JFrame {
 
 	private int elegirIndicePorRuleta(double[] vectorFitness, int evitar) {
 		// En este método evitamos uno de los índices.
-		double totalSumaVector=0;
+		/* double totalSumaVector=0;
 		for(int i=0,til=vectorFitness.length;i<til;i++){
 			if(i==evitar)
 				continue;
 			totalSumaVector+=vectorFitness[i];
-		}
-		totalSumaVector=Math.random()*totalSumaVector;
+		} */
+		// totalSumaVector=Math.random()*totalSumaVector;
 
 		vectorFitness[evitar]=vectorFitness[vectorFitness.length-1];
-		return elegirIndicePorRuleta(Arrays.copyOf(vectorFitness, vectorFitness.length-1),totalSumaVector);
+		return elegirIndicePorRuleta(Arrays.copyOf(vectorFitness, vectorFitness.length-1)/* ,totalSumaVector */);
 	}
 	
 	private int elegirIndicePorRuleta(double[] vectorFitness){
-		return elegirIndicePorRuleta(vectorFitness, 1.0);
+		/* double totalSumaVector=0;
+		for(int i=0,til=vectorFitness.length;i<til;i++)
+			totalSumaVector+=vectorFitness[i]; */
+		return elegirIndicePorRuleta(vectorFitness, DoubleStream.of(vectorFitness).sum());
 	}
 
 	private int elegirIndicePorRuleta(double[] vectorFitness, double totalSumaVector){
