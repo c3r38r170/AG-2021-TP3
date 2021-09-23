@@ -331,6 +331,7 @@ public class App extends JFrame {
 		// 	:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
 			// TODO check si mejor y peor son correctos
 		// StringBuilder JSCommand=new StringBuilder("proximaGeneracion({peor:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",mejor:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
+		// TODO sacar StringBuilder
 		StringBuilder JSCommand=new StringBuilder("proximaGeneracion([");
 		
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
@@ -342,6 +343,7 @@ public class App extends JFrame {
 		webEngine.executeScript(JSCommand.toString());
 	}
 
+// TODO Hacer los 2 métodos, ver si funcionan
 	public void iniciarSimulacion(){
 		tamañoPoblacion=10;
 		reiniciar();

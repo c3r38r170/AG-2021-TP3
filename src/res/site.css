@@ -182,26 +182,24 @@ nav{
 
 					.container {
 						display: grid;
-						grid-template-columns: 1fr 1fr;
-						grid-template-rows: 1fr 1fr 1fr;
+						grid-template-columns: .5fr .5fr;
+						grid-template-rows: .5fr 1fr .1fr .5fr;
 						gap: 0px 0px;
 						grid-auto-flow: row;
 						grid-template-areas:
-						  "individuos_por_poblacion iniciar_con_corridas"
-						  "heuristica_gentico heuristica_gentico"
-						  "genetico_izq genetico_der";
-
-							/* TODO Ahora mismo está molestando. Sacar cuano se arregle. */
-							display: none;
+						  "individuos-y-corridas individuos-y-corridas"
+						  "Heuristica Heuristica"
+						  "geneticotitulo geneticotitulo"
+						  "genetico_1 genetico_2";
 					  }
 					  
-					  .individuos_por_poblacion { grid-area: individuos_por_poblacion; }
+					  .individuos-y-corridas { grid-area: individuos-y-corridas; }
 					  
-					  .iniciar_con_corridas { grid-area: iniciar_con_corridas; }
+					  .Heuristica { grid-area: Heuristica; }
 					  
-					  .heuristica_gentico { grid-area: heuristica_gentico; }
+					  .geneticotitulo { grid-area: geneticotitulo; }
 					  
-					  .genetico_izq { grid-area: genetico_izq; }
+					  .genetico_1 { grid-area: genetico_1; }
 					  
-					  .genetico_der { grid-area: genetico_der; }
+					  .genetico_2 { grid-area: genetico_2; }
 					  

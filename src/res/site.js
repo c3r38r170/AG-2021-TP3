@@ -10,6 +10,7 @@ if(!app)
 			);
 		}
 		,iniciarSimulacion:function(){
+			console.log(arguments);
 			proximaGeneracion(
 				new Array(10).fill().map((el,i)=>({
 					fitness:0.7
@@ -225,22 +226,32 @@ function seleccionarGeneracion(generacion,poblacion=generaciones[generacion.firs
 
 //onload
 addEventListener('DOMContentLoaded',()=>{
-	//TODO quitar, jQuery está prohibido
-	/* $('table').bootstrapTable({
-		data: tableData
-	});
+	gEt('modal-abrir').click();
 
-	$('#modalAjuste').modal('show'); */
+	gEt('cabeceraOrigen').innerHTML+=nombresProvincias.reduce((acc,el,i)=>acc+`<option value=${i}>${el}</option>`,'');
 
 	gEt('modal-iniciar').onclick=()=>{
 		generaciones=[];
 		for(let generacion of [...qS('.generaciones-n')])
 			generacion.remove();
 		
-		app.iniciarSimulacion(
-			gEt('modal-individuos').value
-			,qS('[name="ruleta"]:checked')[0].value
-			,gEt('modal-elitismo').checked
+		let parametros=[
+			+gEt('modal-individuos').value||10
+			,+gEt('modal-corridas').value||1
+			,false //heuristica
+		];
+		if(gEt('tipoAlgoritmoHeuristica').checked){
+			parametros[3]=true;
+			let cabeceraOrigen=gEt('cabeceraOrigen').value;
+			parametros.push(!!cabeceraOrigen?+cabeceraOrigen:19);
+		}else{
+			parametros.push(gEt('conElitismo').checked);
+			parametros.push(gEt('crossoverCircular').checked);
+			parametros.push(gEt('conMutacion').checked);
+		}
+		app.iniciarSimulacion(...parametros
+			/* qS('[name="ruleta"]:checked')[0].value
+			,gEt('modal-elitismo').checked */
 		);
 	};
 
@@ -276,14 +287,6 @@ addEventListener('DOMContentLoaded',()=>{
 		generacionDiv.scrollIntoView(false);
 	};
 
-	// TODO esto es parte del modal
-	gEt('modal-rango').onclick=()=>{
-		let elitismo=gEt('modal-elitismo');
-		elitismo.checked=false;
-		elitismo.disabled=true;
-	}
+//TODO Hacer bloqueos inteligentes (condicionales) en el modal.
 
-	gEt('modal-ruleta').onclick=()=>{
-		gEt('modal-elitismo').disabled=false;
-	}
 });
