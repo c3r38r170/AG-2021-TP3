@@ -1,5 +1,3 @@
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,14 +61,6 @@ public class App extends JFrame {
 		,"Tierra del Fuego, Antártida e Islas del Atlántico Sur - Ushuaia"
 		,"Río Negro - Viedma"
 	};
-	/* public static int[][] DISTANCIAS ={
-		
-		{0,646,792,933,53,986,985,989,375,834,1127,794,2082,979,1080,1334,1282,1005,749,393,579,939,2373,799}
-		,{646,0,677,824,698,340,466,907,348,919,1321,669,2281,362,517,809,745,412,293,330,577,401,2618,1047}
-		,{993.3,855.7,0.0,2168.3,867.6,20.2,556.7,175.9,850.0,1329.5,1.008,1432.6,339.9,1.856,1728.9,824.5,1350.6,1177.7,3304.1,546.0,622.8,3875.8,785.1}
-		,{1361,1898.2,2168.3,0.0,1451.5,2262.7,1662.1,2334.8,2357.5,840.8,1820.9,1572.0,2346.4,744.0,506.2,2332.0,1666.9,1344.9,1161.8,1630.5,1895.0,1733.5,2017.9}
-		,{753.4,439.8,868.4,1450.2,0.0,888.3,401.6,1034.8,899.1,610.4,449.4,655.2,1152.5,1138.0,1199.0,873.6,577.9,401.6,2586.1,370.0,436.6,3157.8,}
-	}; */
 	public static final Integer[][] DISTANCIAS_RAW ={
 			/*23	22	21... */
 		/*1*/{799,2373,939,579,393,749,1005,1282,1334,1080,979,2082,794,1127,834,375,989,985,986,53,933,792,646}
@@ -100,8 +90,8 @@ public class App extends JFrame {
 	public static HashMap<Set<Integer>,Integer> distancias = new HashMap<>();
 
 	public static int obtenerDistanciaEntre(int a,int b){
-		/* if(a==b)
-			return 0; */
+		if(a==b)
+			return 0;
 		HashSet<Integer> set = new HashSet<>();
 		set.add(a);
 		set.add(b);
@@ -117,11 +107,6 @@ public class App extends JFrame {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		// double d = 1.234567;
-		// DecimalFormat df = new DecimalFormat("#.##");
-		// System.out.print(df.format(d));
-		// System.exit(0);
-
 		int n=PROVINCIAS.length-1;
 		for(int i=0;i<n;i++){
 			for(int j=0,to=n-i;j<to;j++){
@@ -139,14 +124,6 @@ public class App extends JFrame {
 	// @Override
 	// public void start(Stage primaryStage) throws Exception {
 	public App(){
-
-		// TODO remove
-		// System.out.println(obtenerDistanciaEntre(0,1));
-		// System.out.println(obtenerDistanciaEntre(21,22));
-		// System.out.println(obtenerDistanciaEntre(23,22));
-
-		// System.exit(0);
-
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JFXPanel jfxPanel = new JFXPanel();
@@ -173,12 +150,6 @@ public class App extends JFrame {
 		// Preparación de la ventana.
 		setIconImage(new ImageIcon(getClass().getResource("/res/Logo AG.png")).getImage());
 		setTitle("Algoritmos Genéticos - TP3");
-		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-		// TODO define
-		setSize(screenSize.width*3/4,screenSize.height*3/4);
-		setLocation(screenSize.width/8, screenSize.height/8);
-		/*setSize(screenSize);
-		setLocation(0,0);*/
 		setVisible(true);
 		setExtendedState( getExtendedState()|JFrame.MAXIMIZED_BOTH );
 	}
@@ -201,7 +172,6 @@ public class App extends JFrame {
 		}
 		
 		ordenarPoblacion(poblacionActual);
-		// calcularMinMaxPro();
 	}
 	
   // Función para realizar cada generación de la simulación.
@@ -213,13 +183,10 @@ public class App extends JFrame {
 		
 		sumatoriaPuntuaciones=0;
 
-		//Individuo[] nuevaPoblacion=nuevaGeneracionPorRuleta();
-		
 		int cantidadPares=tamañoPoblacion/2;
 		Individuo[] nuevaPoblacion=new Individuo[tamañoPoblacion];
 
 		if(elitismo){
-			// // Reemplazamos el último par por los mejores individuos. (Recuerde que las poblaciones están ordenadas.)
 			// Guardamos el 20% de la población total, de ser impar se le resta en 1. Y se pasa a la siguiente generacion
 			int tamañoReducido=(int)Math.floor(tamañoPoblacion*.2);
 
@@ -267,28 +234,9 @@ public class App extends JFrame {
 
 		ordenarPoblacion(nuevaPoblacion);
 		poblacionActual=nuevaPoblacion;
-		
-		// calcularMinMaxPro();
 	}
 
-	private int elegirIndicePorRuleta(double[] vectorFitness, int evitar) {
-		// En este método evitamos uno de los índices.
-		/* double totalSumaVector=0;
-		for(int i=0,til=vectorFitness.length;i<til;i++){
-			if(i==evitar)
-				continue;
-			totalSumaVector+=vectorFitness[i];
-		} */
-		// totalSumaVector=Math.random()*totalSumaVector;
-
-		vectorFitness[evitar]=vectorFitness[vectorFitness.length-1];
-		return elegirIndicePorRuleta(Arrays.copyOf(vectorFitness, vectorFitness.length-1)/* ,totalSumaVector */);
-	}
-	
 	private int elegirIndicePorRuleta(double[] vectorFitness){
-		/* double totalSumaVector=0;
-		for(int i=0,til=vectorFitness.length;i<til;i++)
-			totalSumaVector+=vectorFitness[i]; */
 		return elegirIndicePorRuleta(vectorFitness, DoubleStream.of(vectorFitness).sum());
 	}
 
@@ -313,58 +261,86 @@ public class App extends JFrame {
 		Arrays.sort(poblacion);
 	}
 
-  // Función que calcula Mínimo, Máximo y Promedio de cada generación.
-  // Solo calcula el promedio, ya que los individuos se encuentran ordenados en la población.
-	// private void calcularMinMaxPro(){
-	// 	maximoIndividuo=poblacionActual[0];
-	// 	minimoIndividuo=poblacionActual[tamañoPoblacion-1];
-	// 	// promedio=sumatoriaPuntuaciones/tamañoPoblacion;
-	// 	// if(maximoIndividuo>)
-	// }
+	private Individuo algoritmoHeuristico(int cabeceraDeOrigen){
+		int cantidadProvincias = App.PROVINCIAS.length;
+		ArrayList<Integer> arrayRecorridas = new ArrayList<>();
+		ArrayList<Integer[]> distanciasProvincias;
+		arrayRecorridas.add(cabeceraDeOrigen);
+		int longitud = 0;
+		int proximaProvincia = cabeceraDeOrigen;
+		for(int i=0,to=cantidadProvincias-1; i < to; i++){
+			distanciasProvincias= new ArrayList<>();
+			for(int j=0; j < cantidadProvincias; j++){
+				if(!arrayRecorridas.contains(j)){//si no pasaste por esta provincia, guarda el nombre y la distancia
+					int distancia = obtenerDistanciaEntre(proximaProvincia, j);
+					distanciasProvincias.add(new Integer[]{j,distancia});
+					if(distanciasProvincias.size()==to-i)
+						break;
+				}
+			}
+			if(distanciasProvincias.size()>1)
+				Collections.sort(distanciasProvincias,(Integer[] p1, Integer[] p2) -> p1[1].compareTo(p2[1]));
+			Integer[] provinciaMasCercana=distanciasProvincias.get(0);
+			longitud += provinciaMasCercana[1];
+			proximaProvincia = provinciaMasCercana[0]; //Obtenemos el que menor distnacia tenga osea el siguiente
+			arrayRecorridas.add(proximaProvincia);
+		}
+		longitud+=obtenerDistanciaEntre(proximaProvincia,cabeceraDeOrigen); // Volvemos a la ciudad de partida
+		return new Individuo(arrayRecorridas, longitud);
+	}
 
 	// API para el frontend.
 
-	private void mandarGeneracionActual(){
-		// TODO
-		// double mediano=tamañoPoblacion%2==0?
-		// 	(poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo+poblacionActual[tamañoPoblacion/2+1].valorFuncionObjetivo)/2
-		// 	:poblacionActual[tamañoPoblacion/2].valorFuncionObjetivo;
-			// TODO check si mejor y peor son correctos
-		// StringBuilder JSCommand=new StringBuilder("proximaGeneracion({peor:"+poblacionActual[tamañoPoblacion-1].valorFuncionObjetivo+",med:"+mediano+",mejor:"+poblacionActual[0].valorFuncionObjetivo+",individuos:[");
-		// TODO sacar StringBuilder
-		StringBuilder JSCommand=new StringBuilder("proximaGeneracion([");
+	// Simulacion de Heuristica
+	public void algoritmoHeuristicoDesde(int cabeceraDeOrigen){
+		mandarHeuristico(algoritmoHeuristico(cabeceraDeOrigen));
+	}
+
+	public void algoritmoHeuristicoPorTodos(){
+		ArrayList<Individuo> recorridosHeuristicos= new ArrayList<>();
+		for(int i=0;i<App.PROVINCIAS.length;i++){
+			recorridosHeuristicos.add(algoritmoHeuristico(i));
+		}
+		// TODO No funciona
+		Collections.sort(recorridosHeuristicos);
+		mandarHeuristico(recorridosHeuristicos.get(0));
+	}
+
+	private void mandarHeuristico(Individuo ind){
+		StringBuilder sb = new StringBuilder("recibirResultadoHeuristico([");
+		for(int p : ind.cromosoma)
+			sb.append(p+",");
+		ejecutarJS(sb.toString()+"],"+ind.longitud+")");
+	}
+	
+	// Simulacion de Genético
+	public void iniciarSimulacion(int cantidadIndividuos, int cantidadCorridas,boolean conElitismo){
+		tamañoPoblacion=cantidadIndividuos;
+		elitismo=conElitismo;
 		
+		reiniciar();
+		
+		for(int i=0;i<cantidadCorridas;i++){
+			siguienteGeneracion();
+		}
+	}
+
+	private void mandarGeneracionActual(){
 		String[] poblacionAsJSON=new String[tamañoPoblacion];
 		for (int i = 0; i < tamañoPoblacion; i++)
 			poblacionAsJSON[i]=poblacionActual[i].toJSONObject();
-		
-		// JSCommand.append(String.join(",",poblacionAsJSON)+"]});");
-		JSCommand.append(String.join(",",poblacionAsJSON)+"]);");
-		webEngine.executeScript(JSCommand.toString());
+		ejecutarJS("proximaGeneracion(["+String.join(",",poblacionAsJSON)+"]);");
 	}
-
-// TODO Hacer los 2 métodos, ver si funcionan
-	public void iniciarSimulacion(){
-		tamañoPoblacion=10;
-		reiniciar();
-		mandarGeneracionActual();
-	}
-/* 
-	public void iniciarSimulacion(int cantidadIndividuos, int tipoSeleccion,boolean conElitismo){
-		// TODO
-		tamañoPoblacion=cantidadIndividuos%2==0?
-			cantidadIndividuos
-			:cantidadIndividuos-1;
-		seleccionPorRango=tipoSeleccion==2;
-		elitismo=conElitismo;
-		reiniciar();
-
-		mandarGeneracionActual();
-	} */
 
 	public void siguienteGeneracion(){
 		nuevaGeneracion();
 		mandarGeneracionActual();
+	}
+
+	// Común
+
+	private void ejecutarJS(String comando){
+		webEngine.executeScript(comando);
 	}
 
 }

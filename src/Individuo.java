@@ -11,17 +11,35 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	int longitud=0;
 	boolean inicioFijo=false;
 	
-	public Individuo(int[] cromosoma){
-		for(int i :cromosoma)
-			this.cromosoma.add(i);
-		this.longitudDelCromosoma = cromosoma.length;
-		calcularLongitud();
+	public Individuo(ArrayList<Integer> cromosoma,int longitud){
+		guardarCromosomaArrayList(cromosoma);
+		this.longitud=longitud;
+	}
+
+	public Individuo(int[] cromosoma,int longitud){
+		guardarCromosomaArray(cromosoma);
+		this.longitud=longitud;
 	}
 
 	public Individuo(ArrayList<Integer> cromosoma){
+		guardarCromosomaArrayList(cromosoma);
+		calcularLongitud();
+	}
+
+	public Individuo(int[] cromosoma){
+		guardarCromosomaArray(cromosoma);
+		calcularLongitud();
+	}
+
+	private void guardarCromosomaArrayList(ArrayList<Integer> cromosoma){
 		this.cromosoma =cromosoma;
 		longitudDelCromosoma =cromosoma.size();
-		calcularLongitud();
+	}
+
+	private void guardarCromosomaArray(int[] cromosoma){
+		for(int i :cromosoma)
+			this.cromosoma.add(i);
+		longitudDelCromosoma = cromosoma.length;
 	}
 
 	private void calcularLongitud(){

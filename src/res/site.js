@@ -10,14 +10,22 @@ if(!app)
 			);
 		}
 		,iniciarSimulacion:function(){
-			console.log(arguments);
 			proximaGeneracion(
 				new Array(10).fill().map((el,i)=>({
-					fitness:0.7
-					,recorrido:[23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,1,2,3,4,5,0].sort(()=>Math.random()-.5)
-					,longitud:Math.random(Math.random()*5419669)
+					recorrido:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,16,17,18,19,20,21,22,23].sort(()=>Math.random()-.5)
+					,longitud:Math.round(Math.random()*5419669)
 				}))
 			);
+		}
+		,algoritmoHeuristico:function(){
+			// recibirResultadoHeuristico(
+			// 	[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,16,17,18,19,20,21,22,23].sort(()=>Math.random()-.5)
+			// 	,Math.round(Math.random()*5419669)
+			// );
+			recibirResultadoHeuristico([20,18,6,17,5,13,21,14,16,15,11,2,3,9,8,19,1,0,4,23,10,7,12,22],8129)
+		}
+		,algoritmoHeuristicoPorTodos:function(){
+			recibirResultadoHeuristico([20,18,6,17,5,13,21,14,16,15,11,2,3,9,8,19,1,0,4,23,10,7,12,22],8129)
 		}
 	};
 
@@ -94,9 +102,7 @@ TODO crear objeto mapa con mapa y layers
 var layer;
 
 // manipulación de mapas
-function mostrarIndividuo(generacionID,individuoID){
-	let individuo=generaciones[+generacionID][+individuoID];
-
+function mostrarIndividuo(individuo){
 	gEt('individuo-recorrido-valor').innerText=individuo.longitud;
 
 	cambiarRecorrido(mapaIndividuo,'unico',individuo.recorrido);
@@ -144,9 +150,7 @@ var generaciones=[];
 {
 	individuos:[
 		{
-			fitness:
-			,cromosoma:
-			,valorDecimal:
+			
 		}
 	]
 	,peor:
@@ -154,6 +158,8 @@ var generaciones=[];
 	,mejor:
 }
 */
+
+// Genético
 function proximaGeneracion(generacion){
 	generaciones.push(generacion);
 
@@ -191,7 +197,7 @@ function actualizarMejorHastaAhora(individuo){
 	mejorLongitudHastaAhora=individuo.longitud;
 	let individuoMejor=gEt('individuo-mejor');
 	individuoMejor.dataset.generacionID=generaciones.length-1;
-	individuoMejor.children[1].innerText=mejorLongitudHastaAhora;
+	individuoMejor.children[0].innerText=mejorLongitudHastaAhora;
 }
 
 function seleccionarIndividuo(individuo){
@@ -201,7 +207,11 @@ function seleccionarIndividuo(individuo){
 	if(selected.length)
 		selected[0].classList.remove('generaciones-n-individuo-selected');
 	individuo.classList.add('generaciones-n-individuo-selected');
-	mostrarIndividuo(individuo.closest('.generaciones-n').dataset.id,individuo.firstElementChild.innerText-1);
+	mostrarIndividuo(
+		generaciones
+			[+individuo.closest('.generaciones-n').dataset.id]
+			[individuo.firstElementChild.innerText-1]
+	);
 }
 
 function seleccionarGeneracion(generacion,poblacion=generaciones[generacion.firstElementChild.innerText-1]) { //generacion es un '.generaciones-n-resumen'
@@ -224,6 +234,12 @@ function seleccionarGeneracion(generacion,poblacion=generaciones[generacion.firs
 	}
 }
 
+// Heuristica
+function recibirResultadoHeuristico(recorrido,longitud) {
+	gEt('individuo-mejor').children[0].innerText=longitud;
+	mostrarIndividuo({recorrido,longitud});
+}
+
 //onload
 addEventListener('DOMContentLoaded',()=>{
 	gEt('modal-abrir').click();
@@ -231,39 +247,33 @@ addEventListener('DOMContentLoaded',()=>{
 	gEt('cabeceraOrigen').innerHTML+=nombresProvincias.reduce((acc,el,i)=>acc+`<option value=${i}>${el}</option>`,'');
 
 	gEt('modal-iniciar').onclick=()=>{
-		generaciones=[];
-		for(let generacion of [...qS('.generaciones-n')])
-			generacion.remove();
-		
-		let parametros=[
-			+gEt('modal-individuos').value||10
-			,+gEt('modal-corridas').value||1
-			,false //heuristica
-		];
+		let container =gEt('container-principal')
 		if(gEt('tipoAlgoritmoHeuristica').checked){
-			parametros[3]=true;
-			let cabeceraOrigen=gEt('cabeceraOrigen').value;
-			parametros.push(!!cabeceraOrigen?+cabeceraOrigen:19);
+			container.classList.add('heuristico');
+
+			if(gEt('cabeceraOrigenRadio').checked){
+				let cabeceraOrigen=gEt('cabeceraOrigen').value;
+				app.algoritmoHeuristicoDesde(!!cabeceraOrigen?+cabeceraOrigen:19);
+			}else{
+				app.algoritmoHeuristicoPorTodos();
+			}
 		}else{
-			parametros.push(gEt('conElitismo').checked);
-			parametros.push(gEt('crossoverCircular').checked);
-			parametros.push(gEt('conMutacion').checked);
+			container.classList.remove('heuristico');
+
+			generaciones=[];
+			for(let generacion of [...qS('.generaciones-n')])
+				generacion.remove();
+			app.iniciarSimulacion(
+				+gEt('modal-individuos').value||10
+				,+gEt('modal-corridas').value||1
+				,gEt('elitismo').checked
+			);
 		}
-		app.iniciarSimulacion(...parametros
-			/* qS('[name="ruleta"]:checked')[0].value
-			,gEt('modal-elitismo').checked */
-		);
 	};
 
 	gEt('controles-siguiente').onclick=()=>{
-		// TODO quitar
-		let inicio=0;
-		if(!generaciones.length){
-			app.iniciarSimulacion();
-			inicio=1;
-		}else
-			for(let i=inicio,to=gEt('controles-pasos').value;i<to;i++)
-				app.siguienteGeneracion();
+		for(let i=0,to=gEt('controles-pasos').value;i<to;i++)
+			app.siguienteGeneracion();
 	}
 
 	gEt('generaciones').onclick=e=>{
