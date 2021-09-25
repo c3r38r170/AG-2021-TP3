@@ -1,3 +1,5 @@
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,11 +104,13 @@ public class App extends JFrame {
 	private static double objetivo(Individuo individuo){
 		// El inverso de la cantidad de miles de kilómetros.
 		// Los recorridos tienen probabilidades relativas proporcionales.
-		// (Si un recorrido es el doble de largo que el otro, tiene la mitad del fitness.)
+		// (Si un recorrido es el doble de largo que el otro, tendrá la mitad del fitness.)
 		return 1000.0/individuo.longitud;
 	}
 	
 	public static void main(String[] args) throws Exception {
+		// Ponemos las distancias en un mapa de conjuntos a enteros, donde los conjuntos son cada par de ciudades.
+		// Usar conjuntos nos permite evitar cargar 2 veces las distancias e ignorar la dirección del viaje.
 		int n=PROVINCIAS.length-1;
 		for(int i=0;i<n;i++){
 			for(int j=0,to=n-i;j<to;j++){
@@ -133,7 +137,7 @@ public class App extends JFrame {
 			WebView webView = new WebView();
 			jfxPanel.setScene(new Scene(webView));
 			webEngine = webView.getEngine();
-			webEngine.load(getClass().getResource("res/index.html").toString());
+			webEngine.load(getClass().getResource("res/index.html").toExternalForm());
 			
 			App self=this;
 			webEngine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
@@ -150,6 +154,10 @@ public class App extends JFrame {
 		// Preparación de la ventana.
 		setIconImage(new ImageIcon(getClass().getResource("/res/Logo AG.png")).getImage());
 		setTitle("Algoritmos Genéticos - TP3");
+		// Si no hacemos esto, cuando lo sacamos de pantalla completa la aplicación se achica a alto 0 y ancho mínimo.
+		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+		setSize(screenSize.width*3/4,screenSize.height*3/4);
+		setLocation(screenSize.width/8, screenSize.height/8);
 		setVisible(true);
 		setExtendedState( getExtendedState()|JFrame.MAXIMIZED_BOTH );
 	}
@@ -172,6 +180,7 @@ public class App extends JFrame {
 		}
 		
 		ordenarPoblacion(poblacionActual);
+		mandarGeneracionActual();
 	}
 	
   // Función para realizar cada generación de la simulación.
@@ -187,14 +196,14 @@ public class App extends JFrame {
 		Individuo[] nuevaPoblacion=new Individuo[tamañoPoblacion];
 
 		if(elitismo){
-			// Guardamos el 20% de la población total, de ser impar se le resta en 1. Y se pasa a la siguiente generacion
-			int tamañoReducido=(int)Math.floor(tamañoPoblacion*.2);
-
+			// Guardamos el 20% de la población total (redondeado hacia abajo), de ser impar se guarda uno menos.
+			int tamañoReducido=tamañoPoblacion/5;
 			if (tamañoReducido%2 == 1)
 				tamañoReducido--;
 			
+			cantidadPares -= tamañoReducido/2;
+
 			for (int i = 0; i < tamañoReducido; i++){
-				cantidadPares -= tamañoReducido%2;
 				nuevaPoblacion[tamañoPoblacion-i-1]=poblacionActual[i].crearClon();
 				sumatoriaPuntuaciones+=poblacionActual[i].valorFuncionObjetivo;
 			}
@@ -208,7 +217,7 @@ public class App extends JFrame {
 				,individuo2=poblacionActual[elegirIndicePorRuleta(vectorFitness)].crearClon();
 	
 			// Aplicación de crossover. (Se encarga la clase Individuo)
-			if(individuo1.equals(individuo2) || Math.random()>.75){
+			if(individuo1.equals(individuo2) || Math.random()<.25){
 				nuevaPoblacion[j1]=individuo1;
 				nuevaPoblacion[j2]=individuo2;
 			}else{
@@ -252,41 +261,46 @@ public class App extends JFrame {
 		// Aún así, a veces por división de punto flotante, la suma no es exactamente igual a 1 y el número aleatorio puede entrar en ese margen de error.
 		// Por lo que en ese caso, elegimos el último.
 		// Técnicamente le estamos asignando el resto de la probabilidad a un cromosoma aleatorio, pero es una probabilidad insignificante.
-		// Esto ocurrió en nuestras simulaciones como máximo en un individuo de cada 600 generaciones, pudiendo no aparecer por miles de generaciones.
 		return vectorFitness.length-1;
 	}
 
-	// Ordenamos la población para facilitar el cálculo del máximo, mínimo y promedio.
+	// Ordenamos la población para facilitar la obtención del mejor y peor recorrido.
 	private void ordenarPoblacion(Individuo[] poblacion){
 		Arrays.sort(poblacion);
 	}
 
 	private Individuo algoritmoHeuristico(int cabeceraDeOrigen){
 		int cantidadProvincias = App.PROVINCIAS.length;
-		ArrayList<Integer> arrayRecorridas = new ArrayList<>();
-		ArrayList<Integer[]> distanciasProvincias;
-		arrayRecorridas.add(cabeceraDeOrigen);
+		// Recordamos las ciudades visitadas para no pasar de vuelta.
+		ArrayList<Integer> recorrido = new ArrayList<>();
+		recorrido.add(cabeceraDeOrigen);
 		int longitud = 0;
-		int proximaProvincia = cabeceraDeOrigen;
+
+		int provinciaActual = cabeceraDeOrigen;
+		// Por todas las ciudades que restan visitar, vamos paso a paso viendo cuál está más cerca de nuestra posición actual.
 		for(int i=0,to=cantidadProvincias-1; i < to; i++){
-			distanciasProvincias= new ArrayList<>();
+			ArrayList<Integer[]> distanciasProvincias= new ArrayList<>();
 			for(int j=0; j < cantidadProvincias; j++){
-				if(!arrayRecorridas.contains(j)){//si no pasaste por esta provincia, guarda el nombre y la distancia
-					int distancia = obtenerDistanciaEntre(proximaProvincia, j);
+				if(!recorrido.contains(j)){ // Si no se pasó por esta ciudad, guardar el nombre y la distancia.
+					int distancia = obtenerDistanciaEntre(provinciaActual, j);
 					distanciasProvincias.add(new Integer[]{j,distancia});
-					if(distanciasProvincias.size()==to-i)
+					if(distanciasProvincias.size()==to-i) // Si solo faltan 3 ciudades y ya las encontramos, no tiene sentido seguir fijandose las demás.
 						break;
 				}
 			}
-			if(distanciasProvincias.size()>1)
-				Collections.sort(distanciasProvincias,(Integer[] p1, Integer[] p2) -> p1[1].compareTo(p2[1]));
+			if(distanciasProvincias.size()>1) // Si hay una sola ciudad no tiene sentido ordenarlo.
+				Collections.sort(distanciasProvincias,(Integer[] p1, Integer[] p2) -> p1[1].compareTo(p2[1])); // Ordenamos por distancias.
+			// Obtenemos la más cercana.
 			Integer[] provinciaMasCercana=distanciasProvincias.get(0);
+
 			longitud += provinciaMasCercana[1];
-			proximaProvincia = provinciaMasCercana[0]; //Obtenemos el que menor distnacia tenga osea el siguiente
-			arrayRecorridas.add(proximaProvincia);
+			provinciaActual = provinciaMasCercana[0];
+			recorrido.add(provinciaActual);
 		}
-		longitud+=obtenerDistanciaEntre(proximaProvincia,cabeceraDeOrigen); // Volvemos a la ciudad de partida
-		return new Individuo(arrayRecorridas, longitud);
+
+		longitud+=obtenerDistanciaEntre(provinciaActual,cabeceraDeOrigen); // Volvemos a la ciudad de partida.
+		
+		return new Individuo(recorrido, longitud);
 	}
 
 	// API para el frontend.
@@ -298,10 +312,8 @@ public class App extends JFrame {
 
 	public void algoritmoHeuristicoPorTodos(){
 		ArrayList<Individuo> recorridosHeuristicos= new ArrayList<>();
-		for(int i=0;i<App.PROVINCIAS.length;i++){
+		for(int i=0;i<App.PROVINCIAS.length;i++)
 			recorridosHeuristicos.add(algoritmoHeuristico(i));
-		}
-		// TODO No funciona
 		Collections.sort(recorridosHeuristicos);
 		mandarHeuristico(recorridosHeuristicos.get(0));
 	}
@@ -320,9 +332,8 @@ public class App extends JFrame {
 		
 		reiniciar();
 		
-		for(int i=0;i<cantidadCorridas;i++){
-			siguienteGeneracion();
-		}
+		// La primera corrida es la primera generación aleatoria, por eso restamos uno.
+		siguienteGeneracion(cantidadCorridas-1);
 	}
 
 	private void mandarGeneracionActual(){
@@ -332,13 +343,14 @@ public class App extends JFrame {
 		ejecutarJS("proximaGeneracion(["+String.join(",",poblacionAsJSON)+"]);");
 	}
 
-	public void siguienteGeneracion(){
-		nuevaGeneracion();
-		mandarGeneracionActual();
+	public void siguienteGeneracion(int cantidadVeces){
+		for(int i=0;i<cantidadVeces;i++){
+			nuevaGeneracion();
+			mandarGeneracionActual();
+		}
 	}
 
 	// Común
-
 	private void ejecutarJS(String comando){
 		webEngine.executeScript(comando);
 	}

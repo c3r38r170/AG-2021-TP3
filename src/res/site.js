@@ -18,10 +18,6 @@ if(!app)
 			);
 		}
 		,algoritmoHeuristico:function(){
-			// recibirResultadoHeuristico(
-			// 	[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,16,17,18,19,20,21,22,23].sort(()=>Math.random()-.5)
-			// 	,Math.round(Math.random()*5419669)
-			// );
 			recibirResultadoHeuristico([20,18,6,17,5,13,21,14,16,15,11,2,3,9,8,19,1,0,4,23,10,7,12,22],8129)
 		}
 		,algoritmoHeuristicoPorTodos:function(){
@@ -163,7 +159,7 @@ var generaciones=[];
 function proximaGeneracion(generacion){
 	generaciones.push(generacion);
 
-	if(generacion[0].longitud<mejorLongitudHastaAhora)
+	if(generacion[0].longitud<mejorLongitudHastaAhora || generaciones.length==1)
 		actualizarMejorHastaAhora(generacion[0]);
 
 	// Tabla de generaciones
@@ -268,12 +264,13 @@ addEventListener('DOMContentLoaded',()=>{
 				,+gEt('modal-corridas').value||1
 				,gEt('elitismo').checked
 			);
+
+			mapaIndividuo.mapa.removeLayer(mapaIndividuo.layers.unico.layer);
 		}
 	};
 
 	gEt('controles-siguiente').onclick=()=>{
-		for(let i=0,to=gEt('controles-pasos').value;i<to;i++)
-			app.siguienteGeneracion();
+		app.siguienteGeneracion(+gEt('controles-pasos').value);
 	}
 
 	gEt('generaciones').onclick=e=>{

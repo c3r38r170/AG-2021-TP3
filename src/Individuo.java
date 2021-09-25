@@ -69,7 +69,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			do{
 				ciclos.get(cicloActual).add(indiceActual);
 				indicesVisitados.set(indiceActual, true);
-				indiceActual=this.cromosoma.indexOf(pareja.cromosoma.get(indiceActual));
+				indiceActual=pareja.cromosoma.indexOf(this.cromosoma.get(indiceActual));
 			}while(indiceActual!=primerIndice);
 		}
 		
@@ -88,7 +88,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			p1=p2;
 			p2=tmp;
 		}
-
+		
 		return new Individuo[]{
 			new Individuo(cromosomaNuevo1)
 			,new Individuo(cromosomaNuevo2)
@@ -98,14 +98,16 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	public boolean aplicarMutacion(){
 		if(Math.random()<Individuo.PROBABILIDAD_DE_MUTACIÓN){
 			int primerGen=inicioFijo?1:0;
-			int gen1=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma);
-			int gen2=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma);
+			int gen1=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma-1);
+			int gen2=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma-1);
 			
 			// Método de Mutación: swapping
 			int temp=cromosoma.get(gen1);
 			cromosoma.set(gen1,cromosoma.get(gen2));
-			cromosoma.set(gen2,cromosoma.get(temp));
+			cromosoma.set(gen2,temp);
 			
+			calcularLongitud();
+
 			return true;
 		} else return false;
 	}
@@ -117,16 +119,12 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			clon.valorFuncionObjetivo=valorFuncionObjetivo;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
-		}// I.ndividuo(Arrays.copyOf(cromosoma,cromosoma.length));
+		}
 		return clon;
 	}
 
 	public String toJSONObject() {
-		// TODO ver si no es 1000/
-		StringBuilder sb = new StringBuilder("{\"longitud\":"
-			// +(new DecimalFormat("##.#######")).format(valorFuncionObjetivo/1000)
-			+/* (int)(longDouble*100.0)( */longitud/* /1000) */
-			+",\"recorrido\":[");
+		StringBuilder sb = new StringBuilder("{\"longitud\":"+longitud+",\"recorrido\":[");
 		for(int valorGen : cromosoma){
 			sb.append(valorGen+",");
 		}
@@ -135,7 +133,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	
 	@Override
 	public String toString(){
-		StringBuilder sb = new StringBuilder("Recorrido:");
+		StringBuilder sb = new StringBuilder("Recorrido de "+longitud+"km:");
 		for(int valorGen : cromosoma){
 			sb.append("\n\t"+App.PROVINCIAS[valorGen]);
 		}
@@ -145,7 +143,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	// Este método se usa para ordenar de mejor a peor.
 	@Override
 	public int compareTo(Individuo otro) {
-		double resta=otro.valorFuncionObjetivo-this.valorFuncionObjetivo;
+		double resta=this.longitud-otro.longitud;
 		return (int)(resta/Math.abs(resta));
 	}
 

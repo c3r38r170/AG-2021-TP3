@@ -38,6 +38,9 @@ nav{
 .heuristico #generaciones-mapa,.heuristico #generaciones-tabla {
 	display: none !important;
 }
+	#generaciones-tabla{
+		height: 750px;
+	}
 #container-principal{
 	width: 90%;
 	display: flex;
@@ -97,7 +100,7 @@ nav{
 			}
 			#generaciones{
 				display: grid;
-				overflow:auto;
+				/* overflow:auto; */
 				gap: 0.5rem;
 				scroll-behavior: smooth;
 			}
