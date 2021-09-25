@@ -59,6 +59,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 		}
 
 		List<List<Integer>> ciclos=new ArrayList<>();
+		// Guardamos una referencia sobre qué índices fueron visitados por ciclos anteriores.
 		List<Boolean> indicesVisitados=new ArrayList<> (Collections.nCopies(longitudDelCromosoma, false));
 
 		while(indicesVisitados.contains(false)){
@@ -69,8 +70,10 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			do{
 				ciclos.get(cicloActual).add(indiceActual);
 				indicesVisitados.set(indiceActual, true);
+				// El próximo índice será el lugar donde esté en el segundo cromosoma, la ciudad que está en el índice actual en el primer cromosoma.
 				indiceActual=pareja.cromosoma.indexOf(this.cromosoma.get(indiceActual));
 			}while(indiceActual!=primerIndice);
+			// Mientras no se vuelva a la posición inicial, seguir intercalando índices entre ambos cromosomas.
 		}
 		
     // Crear 2 nuevos cromosomas.
@@ -84,6 +87,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 				cromosomaNuevo1[i]=p1.cromosoma.get(i);
 				cromosomaNuevo2[i]=p2.cromosoma.get(i);
 			}
+			// En cada siguiente ciclo intercambiamos los padres.
 			Individuo tmp=p1;
 			p1=p2;
 			p2=tmp;
