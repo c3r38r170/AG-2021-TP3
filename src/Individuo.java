@@ -9,7 +9,6 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	int longitudDelCromosoma;
 	double valorFuncionObjetivo;
 	int longitud=0;
-	boolean inicioFijo=false;
 	
 	public Individuo(ArrayList<Integer> cromosoma,int longitud){
 		guardarCromosomaArrayList(cromosoma);
@@ -101,9 +100,8 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 	
 	public boolean aplicarMutacion(){
 		if(Math.random()<Individuo.PROBABILIDAD_DE_MUTACIÓN){
-			int primerGen=inicioFijo?1:0;
-			int gen1=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma-1);
-			int gen2=Utils.randomIntBetween(primerGen, this.longitudDelCromosoma-1);
+			int gen1=Utils.randomIntBetween(0, this.longitudDelCromosoma-1);
+			int gen2=Utils.randomIntBetween(0, this.longitudDelCromosoma-1);
 			
 			// Método de Mutación: swapping
 			int temp=cromosoma.get(gen1);
