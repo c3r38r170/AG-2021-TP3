@@ -104,9 +104,7 @@ public class Individuo implements Comparable<Individuo>,Cloneable {
 			int gen2=Utils.randomIntBetween(0, this.longitudDelCromosoma-1);
 			
 			// Método de Mutación: swapping
-			int temp=cromosoma.get(gen1);
-			cromosoma.set(gen1,cromosoma.get(gen2));
-			cromosoma.set(gen2,temp);
+			Collections.swap(cromosoma,gen1,gen2);
 			
 			calcularLongitud();
 
